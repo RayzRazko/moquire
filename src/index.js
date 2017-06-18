@@ -1,3 +1,4 @@
+'use strict';
 const path = require('path');
 const Module = require('module');
 const RestoreModule = require('./RestoreModule');
@@ -12,11 +13,15 @@ function getStack() {
     Error.prepareStackTrace = function (_, stack) {
         return stack;
     };
-    const err = new Error;
-    //noinspection JSAnnotator
-    Error.captureStackTrace(err, arguments.callee);
-    const stack = err.stack;
-    Error.prepareStackTrace = orig;
+
+    let stack;
+    try {
+        throw new Error();
+    } catch (err) {
+        stack = err.stack;
+    } finally {
+        Error.prepareStackTrace = orig;
+    }
     return stack;
 }
 
@@ -24,7 +29,7 @@ function getStack() {
  * Returns the path to the module from which caller function were called.
  */
 function getModulePathBasedOnParentModule(module) {
-    const modulePath = module.indexOf('/') >= 0 || module.indexOf(path.sep) >= 0 ? path.join(path.dirname(getStack()[2].getFileName()), module) : module;
+    const modulePath = module.indexOf('/') >= 0 || module.indexOf(path.sep) >= 0 ? path.join(path.dirname(getStack()[3].getFileName()), module) : module;
     return require.resolve(modulePath);
 }
 
