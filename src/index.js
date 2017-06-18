@@ -1,5 +1,6 @@
 const path = require('path');
 const Module = require('module');
+const RestoreModule = require('./RestoreModule');
 
 /**
  * @module
@@ -28,13 +29,14 @@ function getModulePathBasedOnParentModule(module) {
 }
 
 
-function createMockModule(path){
+function createMockModule(path) {
     const resultModule = new Module(path);
     resultModule.filename = path;
     resultModule.loaded = true;
     resultModule.parent = module;
     return resultModule;
 }
+
 
 module.exports = {
     /**
@@ -53,36 +55,18 @@ module.exports = {
      * NOTE!! Doesn't work with node native modules such as fs, path, etc
      * @param {string} module - module name or path
      * @param {Object|Function} newModule - new module's object/function
-     * @returns {{restore: (function()), getPreviousModule()}} - object with restore function which rolls back changes and replaces passed module with original module in cache and the previousModule which was in the cache
+     * @returns {RestoreModule} - object with restore function which rolls back changes and replaces passed module with original module in cache and the previousModule which was in the cache
      */
     replaceModuleInCache(module, newModule){
         const modulePath = getModulePathBasedOnParentModule(module);
-        let prevModule = require.cache[modulePath] && require.cache[modulePath].exports;
+        let prevModule = require.cache[modulePath];
 
         if (!prevModule) {
             require.cache[modulePath] = createMockModule(modulePath);
         }
 
         require.cache[modulePath].exports = newModule;
-        return {
-            /**
-             * Rolls back the changes
-             */
-            restore(){
-                if (prevModule) {
-                    require.cache[modulePath].exports = prevModule;
-                } else {
-                    delete require.cache[modulePath];
-                }
-            },
-            /**
-             * Returns the previous module if it exists
-             * @returns {Object} - the previous module which was in the cache
-             */
-            getPreviousModule(){
-                return prevModule;
-            }
-        };
+        return new RestoreModule(modulePath, prevModule);
     },
 
     /**

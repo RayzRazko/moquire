@@ -192,3 +192,5 @@ $RECYCLE.BIN/
 ### NotepadPP template
 # Notepad++ backups #
 *.bak
+
+/dist/
