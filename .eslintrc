@@ -1,0 +1,27 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 6
+    },
+    "env": {
+        "es6": true,
+        "browser": true,
+        "node": true,
+        "mocha": true
+    },
+    "rules": {
+        "linebreak-style": [0, "unix"],
+        "constructor-super": 2,
+        "no-confusing-arrow": 2,
+        "no-console": 0,
+        "no-constant-condition": 2,
+        "no-class-assign": 2,
+        "no-unused-vars": 1,
+        "no-unused-expressions": 2,
+        "no-undef": 2,
+        "no-const-assign": 2,
+        "no-dupe-class-members": 2,
+        "no-this-before-super": 2,
+        "require-yield": 2
+    },
+    "extends": "eslint:recommended"
+}
